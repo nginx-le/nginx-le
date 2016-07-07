@@ -9,8 +9,8 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     - `LE_EMAIL` should be your email and `LE_FQDN` for domain
     - alternatively set LETSENCRYPT to false and pass your own cert and key in `SSL_CERT` and `SSL_KEY`
 
-- use provided `etc/service-example.conf` to make your own. Don't change bottom part (server on 80) - it needed to renews LE certificate
-- if you don't want pre-built image make you own. `docker-compose build` will do it
+- use provided `etc/service-example.conf` to make your own. Don't change bottom part (server on 80) - it needed to renew LE certificate
+- if you don't want pre-built image, make you own. `docker-compose build` will do it
 
 ## Some implementation details
 
