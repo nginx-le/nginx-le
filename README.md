@@ -23,3 +23,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - [Caddy](https://caddyserver.com) supports Let's Encrypt directly.
 - [leproxy](https://github.com/artyom/leproxy) small and nice (stand alone) https reverse proxy with automatic Letsencrypt
 - [bunch of others](https://github.com/search?utf8=✓&q=nginx+lets+encrypt)
+
+## Status
+
+Work in progress. It was extracted from another (working) project, but not fully tested yet as a separate thingy.
