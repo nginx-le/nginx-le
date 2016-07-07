@@ -10,13 +10,14 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     - alternatively set LETSENCRYPT to false and pass your own cert and key in `SSL_CERT` and `SSL_KEY`
 
 - use provided `etc/service-example.conf` to make your own. Don't change bottom part (server on 80) - it needed to renews LE certificate
-- if you don't want prebuilt image make you own. `docker-compose build` will do it
+- if you don't want pre-built image make you own. `docker-compose build` will do it
 
-## Some implamantation details
+## Some implementation details
 
 - image uses alpine's `letsencrypt` package.
 - `script/entrypoint.sh` requests LE certificate and will refresh every 60 days.
 - `script/le.sh` gets SSL
+- nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)
 
 ## Alternatives
 - [Caddy](https://caddyserver.com) supports Let's Encrypt directly.
