@@ -9,12 +9,14 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     - `LE_EMAIL` should be your email and `LE_FQDN` for domain
     - alternatively set `LETSENCRYPT` to `false` and pass your own cert and key in `SSL_CERT` and `SSL_KEY`
 
-- use provided `etc/service-example.conf` to make your own. Don't change bottom part (server on 80) - it needed to renew LE certificate
+- use provided `etc/service-example.conf` to make your own. Keep both `ssl_certificate SSL_CERT;` and `ssl_certificate_key SSL_KEY;`
+- pull image - `docker-compose pull`
 - if you don't want pre-built image, make you own. `docker-compose build` will do it
+- start it `docker-compose up`
 
 ## Some implementation details
 
-- image uses alpine's `letsencrypt` package.
+- image uses alpine's `certbot` package.
 - `script/entrypoint.sh` requests LE certificate and will refresh every 60 days.
 - `script/le.sh` gets SSL
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)

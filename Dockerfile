@@ -7,6 +7,7 @@ ADD script/entrypoint.sh /entrypoint.sh
 ADD script/le.sh /le.sh
 
 RUN \
+ rm /etc/nginx/conf.d/default.conf && \
  chmod +x /entrypoint.sh && \
  chmod +x /le.sh && \
  apk add  --update certbot tzdata openssl && \
