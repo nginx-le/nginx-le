@@ -6,7 +6,8 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 
 - get docker-compose.yml and change things
     - set `LETSENCRYPT=true` if you want automatic certificate install and renewal
-    - `LE_EMAIL` should be your email and `LE_FQDN` for domain
+    - `LE_EMAIL` should be your email
+    - `LE_FQDN` for space separated list of domains
     - alternatively set `LETSENCRYPT` to `false` and pass your own cert and key in `SSL_CERT` and `SSL_KEY`
 
 - use provided `etc/service-example.conf` to make your own. Keep both `ssl_certificate SSL_CERT;` and `ssl_certificate_key SSL_KEY;`
