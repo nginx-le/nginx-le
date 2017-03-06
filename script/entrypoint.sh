@@ -5,16 +5,22 @@ echo "start nginx"
 cp /usr/share/zoneinfo/$TZ /etc/localtime && \
 echo $TZ > /etc/timezone && \
 
-
 #setup ssl keys
 echo "ssl_key=${SSL_KEY:=le-key.pem}, ssl_cert=${SSL_CERT:=le-crt.pem}"
 SSL_KEY=/etc/nginx/ssl/${SSL_KEY}
 SSL_CERT=/etc/nginx/ssl/${SSL_CERT}
 mkdir -p /etc/nginx/conf.d
-cp -f /etc/nginx/service.conf /etc/nginx/conf.d/service.conf
-sed -i "s|SSL_KEY|${SSL_KEY}|g" /etc/nginx/conf.d/service.conf
-sed -i "s|SSL_CERT|${SSL_CERT}|g" /etc/nginx/conf.d/service.conf
 
+#copy /etc/nginx/service.conf if mounted
+if [ -f /etc/nginx/service.conf ]; then
+    cp -fv /etc/nginx/service.conf /etc/nginx/conf.d/service.conf
+fi
+
+#replace SSL_KEY and SSL_CERT by actual keys
+sed -i "s|SSL_KEY|${SSL_KEY}|g" /etc/nginx/conf.d/*.conf
+sed -i "s|SSL_CERT|${SSL_CERT}|g" /etc/nginx/conf.d/*.conf
+
+#generate dhparams.pem
 if [ ! -f /etc/nginx/ssl/dhparams.pem ]; then
     echo "make dhparams"
     cd /etc/nginx/ssl
