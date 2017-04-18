@@ -10,7 +10,7 @@ echo "ssl_key=${SSL_KEY:=le-key.pem}, ssl_cert=${SSL_CERT:=le-crt.pem}"
 SSL_KEY=/etc/nginx/ssl/${SSL_KEY}
 SSL_CERT=/etc/nginx/ssl/${SSL_CERT}
 mkdir -p /etc/nginx/conf.d
-mkdir /etc/nginx/ssl
+mkdir -p /etc/nginx/ssl
 
 #copy /etc/nginx/service.conf if mounted
 if [ -f /etc/nginx/service.conf ]; then
