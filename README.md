@@ -5,6 +5,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 ## How to use
 
 - get docker-compose.yml and change things
+    - set timezone `TZ=UTC` for more timezone values check `/usr/share/zoneinfo` directory
     - set `LETSENCRYPT=true` if you want automatic certificate install and renewal
     - `LE_EMAIL` should be your email and `LE_FQDN` for domain
     - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
