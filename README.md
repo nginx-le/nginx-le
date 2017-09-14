@@ -23,6 +23,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)
 
 ## Alternatives
+- [Træfik](https://traefik.io) HTTP reverse proxy and load balancer. Supports Let's Encrypt directly.
 - [Caddy](https://caddyserver.com) supports Let's Encrypt directly.
 - [leproxy](https://github.com/artyom/leproxy) small and nice (stand alone) https reverse proxy with automatic Letsencrypt
 - [bunch of others](https://github.com/search?utf8=✓&q=nginx+lets+encrypt)
