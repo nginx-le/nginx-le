@@ -11,7 +11,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
     - alternatively set `LETSENCRYPT` to `false` and pass your own cert and key in `SSL_CERT` and `SSL_KEY`
 
-- use provided `etc/service-example.conf` to make your own. Keep both `ssl_certificate SSL_CERT;` and `ssl_certificate_key SSL_KEY;`
+- use provided `etc/service-example.conf` to make your own `etc/service.conf`. Keep both `ssl_certificate SSL_CERT;` and `ssl_certificate_key SSL_KEY;`
 - make sure `volumes` in docker-compose.yml changed to your service config
 - you can map multiple config files in compose, for instance `- ./conf.d:/etc/nginx/conf.d`
 - pull image - `docker-compose pull`
