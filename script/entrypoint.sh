@@ -2,8 +2,8 @@
 echo "start nginx"
 
 #set TZ
-cp /usr/share/zoneinfo/$TZ /etc/localtime && \
-echo $TZ > /etc/timezone && \
+cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+echo ${TZ} > /etc/timezone && \
 
 #setup ssl keys
 echo "ssl_key=${SSL_KEY:=le-key.pem}, ssl_cert=${SSL_CERT:=le-crt.pem}"
