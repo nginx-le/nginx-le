@@ -5,6 +5,7 @@ if [ "$LETSENCRYPT" = "true" ]; then
     FIRST_FQDN=$(echo "$LE_FQDN" | cut -d"," -f1)
     cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/privkey.pem /etc/nginx/ssl/le-key.pem
     cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/fullchain.pem /etc/nginx/ssl/le-crt.pem
+    cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/chain.pem /etc/nginx/ssl/le-chain-crt.pem
 else
     echo "letsencrypt disabled"
 fi

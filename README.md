@@ -9,9 +9,10 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     - set `LETSENCRYPT=true` if you want automatic certificate install and renewal
     - `LE_EMAIL` should be your email and `LE_FQDN` for domain
     - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
-    - alternatively set `LETSENCRYPT` to `false` and pass your own cert and key in `SSL_CERT` and `SSL_KEY`
+    - alternatively set `LETSENCRYPT` to `false` and pass your own cert and key in `SSL_CERT` and `SSL_KEY` (and `SSL_CHAIN_CERT` if you need it)
 
 - use provided `etc/service-example.conf` to make your own `etc/service.conf`. Keep both `ssl_certificate SSL_CERT;` and `ssl_certificate_key SSL_KEY;`
+    - if you need [stapling of OCSP responses](https://tools.ietf.org/html/rfc4366#section-3.6), uncomment section starting with `ssl_trusted_certificate SSL_CHAIN_CERT;` in `service.conf`
 - make sure `volumes` in docker-compose.yml changed to your service config
 - you can map multiple config files in compose, for instance `- ./conf.d:/etc/nginx/conf.d`
 - pull image - `docker-compose pull`
