@@ -29,3 +29,4 @@ services:
             - LE_FQDN=www.example.com
             #- SSL_CERT=le-crt.pem
             #- SSL_KEY=le-key.pem
+            #- SSL_CHAIN_CERT=le-chain-crt.pem
