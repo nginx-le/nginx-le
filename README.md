@@ -4,17 +4,20 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 
 ## How to use
 
-- get docker-compose.yml and change things
-    - set timezone to your local, for example `TZ=UTC`. For more timezone values check `/usr/share/zoneinfo` directory
-    - set `LETSENCRYPT=true` if you want automatic certificate install and renewal
-    - `LE_EMAIL` should be your email and `LE_FQDN` for domain
-    - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
-    - alternatively set `LETSENCRYPT` to `false` and pass your own cert in `SSL_CERT`, key in `SSL_KEY` (and `SSL_CHAIN_CERT` if you need it)
-
-- use provided `etc/service-example.conf` to make your own `etc/service.conf`. Keep both `ssl_certificate SSL_CERT;` and `ssl_certificate_key SSL_KEY;`
-    - if you need [stapling of OCSP responses](https://tools.ietf.org/html/rfc4366#section-3.6), uncomment section starting with `ssl_trusted_certificate SSL_CHAIN_CERT;` in `service.conf`
+- get [docker-compose.yml](https://github.com/umputun/nginx-le/blob/master/docker-compose.yml) and change things:
+  - set timezone to your local, for example `TZ=UTC`. For more timezone values check `/usr/share/zoneinfo` directory
+  - set `LETSENCRYPT=true` if you want automatic certificate install and renewal
+  - `LE_EMAIL` should be your email and `LE_FQDN` for domain
+  - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
+  - alternatively set `LETSENCRYPT` to `false` and pass your own cert in `SSL_CERT`, key in `SSL_KEY` and `SSL_CHAIN_CERT`
+  - use provided `etc/service-example.conf` to make your own `etc/service.conf`. Keep ssl directives as is:
+    ```nginx
+    ssl_certificate SSL_CERT;
+    ssl_certificate_key SSL_KEY;
+    ssl_trusted_certificate SSL_CHAIN_CERT;
+    ```
 - make sure `volumes` in docker-compose.yml changed to your service config
-- you can map multiple config files in compose, for instance `- ./conf.d:/etc/nginx/conf.d`
+- you can map multiple custom config files in compose, for instance `- ./conf.d:/etc/nginx/conf.d`
 - pull image - `docker-compose pull`
 - if you don't want pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
@@ -27,6 +30,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)
 
 ## Alternatives
+
 - [Træfik](https://traefik.io) HTTP reverse proxy and load balancer. Supports Let's Encrypt directly.
 - [Caddy](https://caddyserver.com) supports Let's Encrypt directly.
 - [leproxy](https://github.com/artyom/leproxy) small and nice (stand alone) https reverse proxy with automatic Letsencrypt
