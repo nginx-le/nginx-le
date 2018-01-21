@@ -28,6 +28,9 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - `script/entrypoint.sh` requests LE certificate and will refresh every 60 days.
 - `script/le.sh` gets SSL
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)
+- **A+** overall rating on [ssllabs](https://www.ssllabs.com/ssltest/index.html)
+
+![ssllabs](https://github.com/umputun/nginx-le/blob/master/rating.png)
 
 ## Alternatives
 
