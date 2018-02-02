@@ -17,7 +17,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     ssl_trusted_certificate SSL_CHAIN_CERT;
     ```
 - make sure `volumes` in docker-compose.yml changed to your service config
-- you can map multiple custom config files in compose, for instance `- ./conf.d:/etc/nginx/conf.d`
+- you can map multiple custom config files in compose for any `service*.conf` (see [docker-compose.yml](https://github.com/umputun/nginx-le/blob/master/docker-compose.yml) for `service2.conf`)
 - pull image - `docker-compose pull`
 - if you don't want pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
