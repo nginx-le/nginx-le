@@ -12,6 +12,7 @@ SSL_CERT=/etc/nginx/ssl/${SSL_CERT}
 SSL_CHAIN_CERT=/etc/nginx/ssl/${SSL_CHAIN_CERT}
 
 mkdir -p /etc/nginx/conf.d
+mkdir -p /etc/nginx/conf.d.disabled
 mkdir -p /etc/nginx/ssl
 
 #copy /etc/nginx/service*.conf if any of servcie*.conf mounted
