@@ -17,7 +17,7 @@ services:
         volumes:
             - ./etc/ssl:/etc/nginx/ssl
             - ./etc/service-example.conf:/etc/nginx/service.conf
-            # - ./etc/service-example-2.conf:/etc/nginx/service2.conf # more servcies, should be service*.conf
+            # - ./etc/service-example-2.conf:/etc/nginx/service2.conf # more services, should be service*.conf
         ports:
             - "80:80"
             - "443:443"
