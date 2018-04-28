@@ -14,10 +14,17 @@ SSL_CHAIN_CERT=/etc/nginx/ssl/${SSL_CHAIN_CERT}
 mkdir -p /etc/nginx/conf.d
 mkdir -p /etc/nginx/ssl
 
-#copy /etc/nginx/service*.conf if any of servcie*.conf mounted
-if [ -f /etc/nginx/service*.conf ]; then
-    cp -fv /etc/nginx/service*.conf /etc/nginx/conf.d/
+#collect services
+SERVICES=$(find "/etc/nginx/" -type f -maxdepth 1 -name "service*.conf")
+
+#exit, if service missing
+if [ ${#SERVICES} -eq 0 ]; then
+    echo "services missing"
+    exit 1
 fi
+
+#copy /etc/nginx/service*.conf if any of servcie*.conf mounted
+cp -fv /etc/nginx/service*.conf /etc/nginx/conf.d/
 
 #replace SSL_KEY, SSL_CERT and SSL_CHAIN_CERT by actual keys
 sed -i "s|SSL_KEY|${SSL_KEY}|g" /etc/nginx/conf.d/*.conf
