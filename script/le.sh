@@ -1,17 +1,20 @@
 #!/bin/sh
 
+# scripts is trying to renew ceritifacte only if close (30 days) to expiration
+# returns 0 only if certbot called.
+
 target_cert=/etc/nginx/ssl/le-crt.pem
 # 30 days
 renew_before=2592000
 
 if [ "$LETSENCRYPT" != "true" ]; then
     echo "letsencrypt disabled"
-    return 0
+    return 1
 fi
 
 if [ -f ${target_cert} ] && openssl x509 -checkend  ${renew_before} -noout -in ${target_cert} ; then
     echo "letsencrypt certificate still valid"
-    return 0
+    return 1
 fi
 
 echo "letsencrypt certificate invalid, renewing..."
@@ -20,3 +23,4 @@ FIRST_FQDN=$(echo "$LE_FQDN" | cut -d"," -f1)
 cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/privkey.pem /etc/nginx/ssl/le-key.pem
 cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/fullchain.pem ${target_cert}
 cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/chain.pem /etc/nginx/ssl/le-chain-crt.pem
+return 0
