@@ -52,7 +52,7 @@ mv -v /etc/nginx/conf.d /etc/nginx/conf.d.disabled
     echo "reload nginx with ssl"
     nginx -s reload
     # fi
-    sleep 1d
+    sleep 10d
  done
 ) &
 
