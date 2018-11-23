@@ -17,7 +17,7 @@ mkdir -p /etc/nginx/ssl
 #collect services
 SERVICES=$(find "/etc/nginx/" -type f -maxdepth 1 -name "service*.conf")
 
-#copy /etc/nginx/service*.conf if any of servcie*.conf mounted
+#copy /etc/nginx/service*.conf if any of service*.conf mounted
 if [ ${#SERVICES} -ne 0 ]; then
     cp -fv /etc/nginx/service*.conf /etc/nginx/conf.d/
 fi

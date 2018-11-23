@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# scripts is trying to renew ceritifacte only if close (30 days) to expiration
+# scripts is trying to renew certificate only if close (30 days) to expiration
 # returns 0 only if certbot called.
 
 target_cert=/etc/nginx/ssl/le-crt.pem
@@ -20,7 +20,7 @@ fi
 echo "letsencrypt certificate will expire soon or missing, renewing..."
 certbot certonly -t -n --agree-tos --renew-by-default --email "${LE_EMAIL}" --webroot -w /usr/share/nginx/html -d ${LE_FQDN}
 le_result=$?
-if [ $le_result -ne 0 ]; then
+if [ ${le_result} -ne 0 ]; then
     echo "failed to run certbot"
     return 1
 fi
