@@ -23,7 +23,7 @@ if [ -f ${target_cert} ] && openssl x509 -checkend ${renew_before} -noout -in ${
         echo "letsencrypt certificate ${target_cert} still valid"
         return 1
     else
-        echo "letsencrypt certificate ${target_cert} is present, but contains wrong domains"
+        echo "letsencrypt certificate ${target_cert} is present, but doesn't contain expected domains"
         echo "expected: ${LE_FQDN}"
         echo "found:    ${CERT_FQDNS}"
     fi
