@@ -1,4 +1,6 @@
-## nginx-le WebRTC example
+# nginx-le WebRTC example
+
+## About this example
 
 This example covers a popular topic of configuring a reverse proxy with nginx and letsencrypt for SSL. The example nginx configuration ```service.conf``` allows you to map public ports to internal hostnames and ports. This example is developed with WebRTC in mind and it is a suitable solution when you need to handle many ports or port ranges within one domain, yet it is a bit overcomplicated for simplier usecases. In case where you need only a few ports please consider specifying several ```server``` blocks in your ```service.conf``` to keep it as straightforward as possible.
 
