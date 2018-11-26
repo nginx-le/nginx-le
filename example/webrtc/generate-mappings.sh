@@ -6,24 +6,29 @@ SERVICE=$3
 SERVICEPORT=$4
 
 echo "Generating mappings from port $FROMPORT to port $TOPORT with serivce name \"$SERVICE\" and port $SERVICEPORT..."
-echo "==============================================="
-echo "====== server port to internal hostname ======="
-echo "==============================================="
+echo "=================================================="
+echo "=== server port to internal hostname ============="
+echo "= paste below the following line in serivce.conf ="
+echo '= map $server_port $internal_hostname { =========='
+echo "=================================================="
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
     echo "\"$COUNTER\" \"$SERVICE\";"
 done
 
-echo "==============================================="
-echo "====== server port to internal port ==========="
-echo "==============================================="
+echo "=================================================="
+echo "=== server port to internal port ================="
+echo "= paste below the following line in service.conf ="
+echo '= map $server_port $internal_port { =============='
+echo "=================================================="
 
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
     echo "\"$COUNTER\" \"$((SERVICEPORT + COUNTER))\";"
 done
 
-echo "==============================================="
-echo "=================== listen ===================="
-echo "==============================================="
+echo "=================================================="
+echo "=== public ports to listen on nginx container ===="
+echo "=== paste inside server block in service.conf ===="
+echo "=================================================="
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
-    echo "listen \"$COUNTER\";"
+    echo "listen $COUNTER;"
 done
