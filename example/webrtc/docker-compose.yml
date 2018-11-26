@@ -1,0 +1,42 @@
+version: '3'
+services:
+    service1:
+        image: jwilder/whoami
+        container_name: service1
+        hostname: service1
+        ports:
+          - "8000"
+
+    service2:
+        image: strm/helloworld-http
+        container_name: service2
+        hostname: service2
+        ports:
+          - "80"
+
+    nginx:
+        build: .
+        image: umputun/nginx-le:latest
+        hostname: nginx
+        restart: always
+        container_name: nginx
+        depends_on:
+          - "service1"
+          - "service2"
+
+        volumes:
+            - ./etc/ssl:/etc/nginx/ssl
+            - ./etc/service.conf:/etc/nginx/service.conf
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8443:8443"
+
+        environment:
+            - TZ=GMT
+            - LETSENCRYPT=true
+            - LE_EMAIL=youremail@example.com
+            - LE_FQDN=yourdomain.com
+            #- SSL_CERT=le-crt.pem
+            #- SSL_KEY=le-key.pem
+            #- SSL_CHAIN_CERT=le-chain-crt.pem
