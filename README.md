@@ -41,4 +41,4 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 
 ## Examples
 
-- [Reverse proxy](https://github.com/umputun/nginx-le/tree/master/example/reverse-proxy) with ports to host mapping.
+- [Reverse proxy](https://github.com/umputun/nginx-le/tree/master/example/webrtc) for WebRTC solutions, where you need multiple ports on one domain to reach different services behind your `nginx-le` container.

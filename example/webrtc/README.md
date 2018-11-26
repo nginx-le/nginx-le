@@ -2,9 +2,9 @@
 
 Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsencrypt.org) support.
 
-## Reverse proxy example
+## WebRTC example
 
-This example covers a popular topic of configuring a reverse proxy with nginx and letsencrypt for SSL. The example nginx configuration ```service.conf``` allows you to map public ports to internal hostnames and ports.
+This example covers a popular topic of configuring a reverse proxy with nginx and letsencrypt for SSL. The example nginx configuration ```service.conf``` allows you to map public ports to internal hostnames and ports. This example is developed with WebRTC in mind and it is a suitable solution when you need to handle many ports or port ranges within one domain, yet it is a bit overcomplicated for simplier usecases. In case where you need only a few ports please consider specifying several ```server``` blocks in your ```service.conf``` to keep it as straightforward as possible.
 
 There are 2 sample services in ```docker-compose.yml```.
 ```service1``` exposes port ```8000``` and ```service2``` exposes port ```80```.
@@ -15,8 +15,8 @@ To debug the routing of your requests you can add the following section to ```se
 ```
 server {
     ...
-    add_header X-inthostname "$int_hostname";
-    add_header X-intport "$int_port";
+    add_header X-internal-hostname "$int_hostname";
+    add_header X-internal-port "$int_port";
     ...
 }
 ```
