@@ -10,6 +10,15 @@ There are 2 sample services in ```docker-compose.yml```.
 ```service1``` exposes port ```8000``` and ```service2``` exposes port ```80```.
 The nginx listens to ports ```443``` and ```8443``` and proxy requests to these services, effectively wrapping them with SSL. The nginx configuration file ```service.conf``` contains mappings between publically accessible ports, exposed on nginx itself, and private services names and their ports.
 
+There is also a script to help you generate mappings for some range of ports, named `generate-mappings.sh`. Just pass in the `first port`, `last port`, `internal service name` and `internal service starting port` like this:
+
+```
+sh generate-mappings.sh 8080 8090 service1 8000
+```
+
+to get the lines you can copy to your `service.conf`.
+
+
 To debug the routing of your requests you can add the following section to ```service.conf```, which will add headers to http responses to identify the target host and port of the internal service.
 
 ```
