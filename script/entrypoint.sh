@@ -46,10 +46,10 @@ mv -v /etc/nginx/conf.d /etc/nginx/conf.d.disabled
  echo "start letsencrypt updater"
  while :
  do
-	echo "trying to update letsencrypt ..."
+    echo "trying to update letsencrypt ..."
     /le.sh
-    rm -f /etc/nginx/conf.d/default.conf 2>/dev/null #remove default config, conflicting on 80
-    mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d #enable
+    rm -f /etc/nginx/conf.d/default.conf 2>/dev/null #on the first run remove default config, conflicting on 80
+    mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null #on the first run enable config back
     echo "reload nginx with ssl"
     nginx -s reload
     sleep 10d
