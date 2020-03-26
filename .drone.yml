@@ -1,0 +1,45 @@
+kind: pipeline
+name: default
+type: docker
+
+steps:
+  - name: docker master
+    image: plugins/docker
+    settings:
+      repo: umputun/nginx-le
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tags:
+        - ${DRONE_COMMIT_BRANCH/\//-}
+    when:
+      branch: [master]
+      event: push
+
+  - name: docker tag
+    image: plugins/docker
+    settings:
+      repo: umputun/remark42
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tags:
+        - ${DRONE_TAG}
+        - latest
+    when:
+      event: tag
+
+  - name: notify
+    image: drillster/drone-email
+    settings:
+      host: smtp.mailgun.org
+      username:
+        from_secret: email_username
+      password:
+        from_secret: email_password
+      from: drone@mg.umputun.dev
+      recipients: [sys@umputun.dev]
+    when:
+      status: [changed, failure]
