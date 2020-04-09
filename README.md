@@ -25,7 +25,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 ## Some implementation details
 
 **Important:** provided [nginx.conf](https://github.com/umputun/nginx-le/blob/master/conf/nginx.conf) handles 
-http->https redirect automatically, no need to add it into your custom `servcie.conf`. In case if you need a custom server on
+http->https redirect automatically, no need to add it into your custom `service.conf`. In case if you need a custom server on
 http (:80) port, make sure you [handle](https://github.com/umputun/nginx-le/blob/master/conf/nginx.conf#L62) `/.well-known/` 
 path needed for LE challenge.  
 
