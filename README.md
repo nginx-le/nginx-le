@@ -6,7 +6,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 
 - get [docker-compose.yml](https://github.com/umputun/nginx-le/blob/master/docker-compose.yml) and change things:
   - set timezone to your local, for example `TZ=UTC`. For more timezone values check `/usr/share/zoneinfo` directory
-  - set `LETSENCRYPT=true` if you want automatic certificate install and renewal
+  - set `LETSENCRYPT=true` if you want an automatic certificate install and renewal
   - `LE_EMAIL` should be your email and `LE_FQDN` for domain
   - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
   - alternatively set `LETSENCRYPT` to `false` and pass your own cert in `SSL_CERT`, key in `SSL_KEY` and `SSL_CHAIN_CERT`
@@ -17,10 +17,36 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     ssl_trusted_certificate SSL_CHAIN_CERT;
     ```
 - make sure `volumes` in docker-compose.yml changed to your service config
-- you can map multiple custom config files in compose for any `service*.conf` (see [docker-compose.yml](https://github.com/umputun/nginx-le/blob/master/docker-compose.yml) for `service2.conf`)
+- you can map multiple custom config files to in compose using `service*.conf` filename pattern, 
+  see `service2.conf` in [docker-compose.yml](https://github.com/nginx-le/nginx-le/blob/master/docker-compose.yml)
+  file for reference
 - pull image - `docker-compose pull`
 - if you don't want pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
+
+### Configuration files variables replacement
+
+On start of the container all following text matches in custom configuration files you mounted will be replaced,
+variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment, please see next table for their list.
+
+| Matching pattern | Value | nginx usage | Description |
+| ---------------- | ----- | ----------- | ----------- |
+| SSL_CERT       | `/etc/nginx/ssl/$SSL_CERT`       | `ssl_certificate` | Public SSL certificate, sent to client |
+| SSL_KEY        | `/etc/nginx/ssl/$SSL_KEY`        | `ssl_certificate_key` | SSL private key, not sent to client |
+| SSL_CHAIN_CERT | `/etc/nginx/ssl/$SSL_CHAIN_CERT` | `ssl_trusted_certificate` | Trusted SSL certificates, not sent to client |
+| LE_FQDN        | `$LE_FQDN` | `server_name` | List of domains, useful for configuration with single `server` block |
+
+### Environment variables list
+
+| Variable | Default value | Description |
+| -------- | ------------- | ----------- |
+| SSL_CERT       | `le-key.pem` | certbot `privkey.pem` new filename     |
+| SSL_KEY        | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_CHAIN_CERT | `le-chain-crt.pem` | certbot `chain.pem` new filename |
+| LETSENCRYPT | `false` | Enables Let's Encrypt certificate retrieval and renewal |
+| LE_FQDN     | | comma-separated list of domains for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
+| LE_EMAIL    | | comma-separated list of emails for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
+| TZ          | | Timezone, if set will be written to container's `/etc/timezone` |
 
 ## Some implementation details
 
@@ -46,4 +72,5 @@ path needed for LE challenge.
 
 ## Examples
 
-- [Reverse proxy](https://github.com/umputun/nginx-le/tree/master/example/webrtc) for WebRTC solutions, where you need multiple ports on one domain to reach different services behind your `nginx-le` container.
+- [Reverse proxy](https://github.com/umputun/nginx-le/tree/master/example/webrtc) for WebRTC solutions,
+  where you need multiple ports on one domain to reach different services behind your `nginx-le` container.
