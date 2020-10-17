@@ -20,8 +20,10 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - you can map multiple custom config files to in compose using `service*.conf` filename pattern, 
   see `service2.conf` in [docker-compose.yml](https://github.com/nginx-le/nginx-le/blob/master/docker-compose.yml)
   file for reference
+- `stream*.conf` files are picked up into `/etc/nginx/stream.d/` directory and included into `stream`
+  section of the Nginx configuration, see `stream2.conf` in `docker-compose.yml` file for reference.
 - pull image - `docker-compose pull`
-- if you don't want pre-built image, make you own. `docker-compose build` will do it
+- if you don't want a pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
 
 ### Configuration files variables replacement

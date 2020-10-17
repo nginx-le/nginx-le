@@ -18,6 +18,7 @@ services:
             - ./etc/ssl:/etc/nginx/ssl
             - ./etc/service-example.conf:/etc/nginx/service.conf
             # - ./etc/service-example-2.conf:/etc/nginx/service2.conf # more services, should be service*.conf
+            # - ./etc/stream-example-2.conf:/etc/nginx/stream2.conf # more streams, should be stream*.conf
         ports:
             - "80:80"
             - "443:443"
