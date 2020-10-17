@@ -13,7 +13,11 @@ export LE_SSL_KEY=/etc/nginx/ssl/${SSL_KEY}
 export LE_SSL_CERT=/etc/nginx/ssl/${SSL_CERT}
 export LE_SSL_CHAIN_CERT=/etc/nginx/ssl/${SSL_CHAIN_CERT}
 
-#create destination folders
+#create configuration source directories, in case they are not mounted
+mkdir -p /etc/nginx/conf.d-le
+mkdir -p /etc/nginx/stream.conf.d-le
+
+#create destination directories
 mkdir -p /etc/nginx/conf.d
 mkdir -p /etc/nginx/stream.d
 mkdir -p /etc/nginx/ssl
@@ -29,6 +33,9 @@ fi
 if [ ${#STREAMS_FILES} -ne 0 ]; then
     cp -fv /etc/nginx/stream*.conf /etc/nginx/stream.d/
 fi
+
+cp -fv /etc/nginx/conf.d-le/*.conf /etc/nginx/conf.d/
+cp -fv /etc/nginx/stream.conf.d-le/*.conf /etc/nginx/stream.conf.d/
 
 #replace SSL_KEY, SSL_CERT and SSL_CHAIN_CERT by actual keys
 sed -i "s|SSL_KEY|${LE_SSL_KEY}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
