@@ -2,33 +2,36 @@
 echo "start nginx"
 
 #set TZ
-cp /usr/share/zoneinfo/${TZ} /etc/localtime
-echo ${TZ} > /etc/timezone
+if [[ ! -z "${TZ}" ]]; then
+    cp /usr/share/zoneinfo/${TZ} /etc/localtime
+    echo ${TZ} >/etc/timezone
+fi
 
-#setup ssl keys
+#setup ssl keys, export to pass them to le.sh
 echo "ssl_key=${SSL_KEY:=le-key.pem}, ssl_cert=${SSL_CERT:=le-crt.pem}, ssl_chain_cert=${SSL_CHAIN_CERT:=le-chain-crt.pem}"
-SSL_KEY=/etc/nginx/ssl/${SSL_KEY}
-SSL_CERT=/etc/nginx/ssl/${SSL_CERT}
-SSL_CHAIN_CERT=/etc/nginx/ssl/${SSL_CHAIN_CERT}
+export LE_SSL_KEY=/etc/nginx/ssl/${SSL_KEY}
+export LE_SSL_CERT=/etc/nginx/ssl/${SSL_CERT}
+export LE_SSL_CHAIN_CERT=/etc/nginx/ssl/${SSL_CHAIN_CERT}
 
+#create destination folders
 mkdir -p /etc/nginx/conf.d
 mkdir -p /etc/nginx/ssl
 
 #collect services
-SERVICES=$(find "/etc/nginx/" -type f -maxdepth 1 -name "service*.conf")
+SERVICES_FILES=$(find "/etc/nginx/" -type f -maxdepth 1 -name "service*.conf")
 
-#copy /etc/nginx/service*.conf if any of service*.conf mounted
-if [ ${#SERVICES} -ne 0 ]; then
+#copy service*.conf from /etc/nginx/ if they are mounted
+if [ ${#SERVICES_FILES} -ne 0 ]; then
     cp -fv /etc/nginx/service*.conf /etc/nginx/conf.d/
 fi
 
 #replace SSL_KEY, SSL_CERT and SSL_CHAIN_CERT by actual keys
-sed -i "s|SSL_KEY|${SSL_KEY}|g" /etc/nginx/conf.d/*.conf
-sed -i "s|SSL_CERT|${SSL_CERT}|g" /etc/nginx/conf.d/*.conf
-sed -i "s|SSL_CHAIN_CERT|${SSL_CHAIN_CERT}|g" /etc/nginx/conf.d/*.conf
+sed -i "s|SSL_KEY|${LE_SSL_KEY}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
+sed -i "s|SSL_CERT|${LE_SSL_CERT}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
+sed -i "s|SSL_CHAIN_CERT|${LE_SSL_CHAIN_CERT}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
 
 #replace LE_FQDN
-sed -i "s|LE_FQDN|${LE_FQDN}|g" /etc/nginx/conf.d/*.conf
+sed -i "s|LE_FQDN|${LE_FQDN}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
 
 #generate dhparams.pem
 if [ ! -f /etc/nginx/ssl/dhparams.pem ]; then
@@ -38,18 +41,19 @@ if [ ! -f /etc/nginx/ssl/dhparams.pem ]; then
     chmod 600 dhparams.pem
 fi
 
-#disable ssl configuration and let it run without SSL
+#disable configuration and let it run without SSL
 mv -v /etc/nginx/conf.d /etc/nginx/conf.d.disabled
 
 (
  sleep 5 #give nginx time to start
  echo "start letsencrypt updater"
- while :
- do
+ while :; do
     echo "trying to update letsencrypt ..."
     /le.sh
-    rm -f /etc/nginx/conf.d/default.conf 2>/dev/null #on the first run remove default config, conflicting on 80
-    mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null #on the first run enable config back
+    #on the first run remove default config, conflicting on 80
+    rm -f /etc/nginx/conf.d/default.conf 2>/dev/null
+    #on the first run enable config back
+    mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null
     echo "reload nginx with ssl"
     nginx -s reload
     sleep 10d
