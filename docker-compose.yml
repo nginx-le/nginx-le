@@ -19,6 +19,8 @@ services:
             - ./etc/service-example.conf:/etc/nginx/service.conf
             # - ./etc/service-example-2.conf:/etc/nginx/service2.conf # more services, should be service*.conf
             # - ./etc/stream-example-2.conf:/etc/nginx/stream2.conf # more streams, should be stream*.conf
+            # - ./etc/conf.d:/etc/nginx/conf.d-le # configuration folder, all files from it will be added
+            # - ./etc/stream.conf:/etc/nginx/stream.conf.d-le # streams configuration folder, all files from it will be added
         ports:
             - "80:80"
             - "443:443"
