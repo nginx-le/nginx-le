@@ -12,20 +12,20 @@ if [ "$LETSENCRYPT" != "true" ]; then
 fi
 
 # redirection to /dev/null to remove "Certificate will not expire" output
-if [ -f ${LE_SSL_CERT} ] && openssl x509 -checkend ${renew_before} -noout -in ${LE_SSL_CERT} > /dev/null ; then
+if [ -f ${LE_SSL_CERT} ] && openssl x509 -checkend ${renew_before} -noout -in ${LE_SSL_CERT} >/dev/null; then
     # egrep to remove leading whitespaces
     CERT_FQDNS=$(openssl x509 -in ${LE_SSL_CERT} -text -noout | egrep -o 'DNS.*')
     # run and catch exit code separately because couldn't embed $@ into `if` line properly
-    set -- $(echo ${LE_FQDN} | tr ',' '\n'); for element in "$@"; do echo ${CERT_FQDNS} | grep -q $element ; done
+    set -- $(echo ${LE_FQDN} | tr ',' '\n')
+    for element in "$@"; do echo ${CERT_FQDNS} | grep -q $element; done
     CHECK_RESULT=$?
-    if [ ${CHECK_RESULT} -eq 0 ] ; then
+    if [ ${CHECK_RESULT} -eq 0 ]; then
         echo "letsencrypt certificate ${LE_SSL_CERT} still valid"
         return 1
-    else
-        echo "letsencrypt certificate ${LE_SSL_CERT} is present, but doesn't contain expected domains"
-        echo "expected: ${LE_FQDN}"
-        echo "found:    ${CERT_FQDNS}"
     fi
+    echo "letsencrypt certificate ${LE_SSL_CERT} is present, but doesn't contain expected domains"
+    echo "expected: ${LE_FQDN}"
+    echo "found:    ${CERT_FQDNS}"
 fi
 
 echo "letsencrypt certificate will expire soon or missing, renewing..."
