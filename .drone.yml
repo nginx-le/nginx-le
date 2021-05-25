@@ -20,7 +20,7 @@ steps:
   - name: docker tag
     image: plugins/docker
     settings:
-      repo: umputun/remark42
+      repo: umputun/nginx-le
       username:
         from_secret: docker_username
       password:
