@@ -73,6 +73,7 @@ path needed with `root` set for LE challenge: `location /.well-known/ {root /usr
 
 ## Alternatives
 
+- [Reproxy](https://reproxy.io) simple edge HTTP(s) server / reverse proxy supporting various providers.
 - [Træfik](https://traefik.io) HTTP reverse proxy and load balancer. Supports Let's Encrypt directly.
 - [Caddy](https://caddyserver.com) supports Let's Encrypt directly.
 - [leproxy](https://github.com/artyom/leproxy) small and nice (stand alone) https reverse proxy with automatic Letsencrypt
