@@ -1,6 +1,6 @@
 FROM nginx:1.24-alpine
 
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#docker
+# enables automatic changelog generation by tools like Dependabot
 LABEL org.opencontainers.image.source="https://github.com/nginx-le/nginx-le"
 
 ADD conf/nginx.conf /etc/nginx/nginx.conf
