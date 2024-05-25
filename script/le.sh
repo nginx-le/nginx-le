@@ -34,7 +34,16 @@ if [ -f ${LE_SSL_CERT} ] && openssl x509 -checkend ${renew_before} -noout -in ${
 fi
 
 echo "letsencrypt certificate will expire soon or missing, renewing..."
-certbot certonly -t -n --agree-tos --renew-by-default --email "${LE_EMAIL}" --webroot -w /usr/share/nginx/html -d ${LE_FQDN}
+LE_ADDITIONAL_OPTIONS_TRIMMED=${LE_ADDITIONAL_OPTIONS}
+first_char="${LE_ADDITIONAL_OPTIONS:0:1}"
+last_char="${LE_ADDITIONAL_OPTIONS: -1}"
+if [ "$first_char" = "$last_char" ] && [ "$first_char" = "'" -o "$first_char" = '"' ]; then
+    LE_ADDITIONAL_OPTIONS_TRIMMED="${LE_ADDITIONAL_OPTIONS:1:${#LE_ADDITIONAL_OPTIONS}-2}"
+    echo "trimmed quotes from additional options: ${LE_ADDITIONAL_OPTIONS_TRIMMED}"
+fi
+
+# Use the trimmed string when calling the command
+eval "certbot certonly -t -n --agree-tos --renew-by-default --email \"${LE_EMAIL}\" --webroot -w /usr/share/nginx/html -d ${LE_FQDN} ${LE_ADDITIONAL_OPTIONS_TRIMMED}"
 le_result=$?
 if [ ${le_result} -ne 0 ]; then
     echo "failed to run certbot"

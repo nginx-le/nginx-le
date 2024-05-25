@@ -10,6 +10,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
   - `LE_EMAIL` should be your email and `LE_FQDN` for domain
   - for multiple FQDNs you can pass comma-separated list, like `LE_FQDN=aaa.example.com,bbb.example.com`
   - alternatively set `LETSENCRYPT` to `false` and pass your own cert in `SSL_CERT`, key in `SSL_KEY` and `SSL_CHAIN_CERT`
+  - `LE_ADDITIONAL_OPTIONS` can be set to anything you want to append to certbot, for example `LE_ADDITIONAL_OPTIONS=--preferred-chain "ISRG Root X1" --debug`.
   - use provided `etc/service-example.conf` to make your own `etc/service.conf`. Keep ssl directives as is:
     ```nginx
     ssl_certificate SSL_CERT;
@@ -54,6 +55,7 @@ variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment,
 | LETSENCRYPT | `false` | Enables Let's Encrypt certificate retrieval and renewal |
 | LE_FQDN     | | comma-separated list of domains for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
 | LE_EMAIL    | | comma-separated list of emails for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
+| LE_ADDITIONAL_OPTIONS | | Additional options to be appended to certbot command |
 | TZ          | | Timezone, if set will be written to container's `/etc/timezone` |
 
 ## Some implementation details
