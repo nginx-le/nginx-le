@@ -1,4 +1,4 @@
-FROM nginx:1.24-alpine
+FROM nginx:1.27-alpine
 
 # enables automatic changelog generation by tools like Dependabot
 LABEL org.opencontainers.image.source="https://github.com/nginx-le/nginx-le"
