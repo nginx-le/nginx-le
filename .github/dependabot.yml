@@ -17,3 +17,7 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    # ignore updates with odd numbers like 1.27 and 1.29 but allow 1.28 and 1.30
+    ignore:
+      - dependency-name: "nginx"
+        versions: ["1.27", "1.29", "1.31", "1.33", "1.35", "1.37", "1.39"]
