@@ -1,0 +1,26 @@
+version: '2'
+services:
+    nginx:
+        build: ../..
+        image: umputun/nginx-le:latest
+        hostname: nginx
+        restart: always
+        container_name: nginx
+        logging:
+          driver: json-file
+          options:
+              max-size: "10m"
+              max-file: "5"
+        volumes:
+            - ./etc/ssl:/etc/nginx/ssl
+            - ./etc/service-example.conf.template:/etc/nginx/templates/service-example.conf.template
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            - TZ=America/Chicago
+            - LETSENCRYPT=true
+            - LE_EMAIL=name@example.com
+            - LE_FQDN=www.example.com
+            - DOMAIN1=one.example.com
+            - DOMAIN2=two.example.com

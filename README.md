@@ -58,6 +58,10 @@ variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment,
 | LE_ADDITIONAL_OPTIONS | | Additional options to be appended to certbot command |
 | TZ          | | Timezone, if set will be written to container's `/etc/timezone` |
 
+### `envsubst` templates
+
+If you need to use any other environment variables you could mount your configuration as `/etc/nginx/templates/yourservice.conf.template` and `envsubsts` would be executed on that file. More info could be found [here](https://github.com/docker-library/docs/tree/master/nginx#using-environment-variables-in-nginx-configuration-new-in-119)
+
 ## Some implementation details
 
 **Important:** provided [nginx.conf](https://github.com/umputun/nginx-le/blob/master/conf/nginx.conf) handles 
