@@ -22,6 +22,19 @@ mkdir -p /etc/nginx/conf.d
 mkdir -p /etc/nginx/stream.d
 mkdir -p /etc/nginx/ssl
 
+if /usr/bin/find "/docker-entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
+    find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
+        case "$f" in
+            *.envsh)
+                [ -x "$f" ] && source "$f"
+                ;;
+            *.sh)
+                [ -x "$f" ] && "$f"
+                ;;
+        esac
+    done
+fi
+
 #collect services and streams
 SERVICES_FILES=$(find "/etc/nginx/" -type f -maxdepth 1 -name "service*.conf")
 STREAMS_FILES=$(find "/etc/nginx/" -type f -maxdepth 1 -name "stream*.conf")
