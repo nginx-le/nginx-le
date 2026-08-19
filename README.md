@@ -70,6 +70,10 @@ http (:80) port, make sure you [handle](https://github.com/umputun/nginx-le/blob
 path needed with `root` set for LE challenge: `location /.well-known/ {root /usr/share/nginx/html;}`
 
 - image uses alpine's `certbot` package.
+- OCSP stapling is not enabled, [Let's Encrypt retired its OCSP responders](https://letsencrypt.org/2025/08/06/ocsp-service-has-reached-end-of-life)
+  and their certificates carry no responder URL. If you bring your own certificate from a CA that still
+  publishes one, or one with the Must-Staple extension, enable `ssl_stapling` and `ssl_stapling_verify`
+  in your own `server` block.
 - `script/entrypoint.sh` requests LE certificate and will refresh every 10 days in case if certificate is close to expiration (30day)
 - `script/le.sh` gets SSL
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)
