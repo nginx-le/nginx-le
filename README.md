@@ -1,4 +1,4 @@
-# NGINX-LE - Nginx web and proxy with automatic let's encrypt [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/umputun/nginx-le/) 
+# NGINX-LE - Nginx web and proxy with automatic let's encrypt [![build](https://github.com/nginx-le/nginx-le/actions/workflows/build.yml/badge.svg)](https://github.com/nginx-le/nginx-le/actions/workflows/build.yml)
 
 Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsencrypt.org) support.
 
