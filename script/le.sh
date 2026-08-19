@@ -1,10 +1,44 @@
 #!/bin/sh
 
 # scripts is trying to renew certificate only if close (30 days) to expiration
-# returns 0 only if certbot called.
+# exit codes: 0 - certificate installed, 1 - nothing to do, 2 - renewal or installation failed
 
 # 30 days
 renew_before=2592000
+
+# nginx refuses to load a certificate and a key from different pairs
+cert_key_match() { # certificate key
+    cert_pubkey=$(openssl x509 -pubkey -noout -in "$1" 2>/dev/null)
+    key_pubkey=$(openssl pkey -pubout -in "$2" 2>/dev/null)
+    [ -n "${cert_pubkey}" ] && [ "${cert_pubkey}" = "${key_pubkey}" ]
+}
+
+remove_staged() {
+    rm -f "${LE_SSL_KEY}.new" "${LE_SSL_CERT}.new" "${LE_SSL_CHAIN_CERT}.new"
+}
+
+# keep the installed files aside, a write failing half way through must not leave a mismatched pair behind
+backup_installed() {
+    for installed in "${LE_SSL_KEY}" "${LE_SSL_CERT}" "${LE_SSL_CHAIN_CERT}"; do
+        [ -f "${installed}" ] || continue
+        cp -f "${installed}" "${installed}.bak" || return 1
+    done
+}
+
+restore_installed() {
+    for installed in "${LE_SSL_KEY}" "${LE_SSL_CERT}" "${LE_SSL_CHAIN_CERT}"; do
+        if [ -f "${installed}.bak" ]; then
+            cp -f "${installed}.bak" "${installed}"
+        else
+            # nothing was installed under this name before, leave nothing behind
+            rm -f "${installed}"
+        fi
+    done
+}
+
+remove_backup() {
+    rm -f "${LE_SSL_KEY}.bak" "${LE_SSL_CERT}.bak" "${LE_SSL_CHAIN_CERT}.bak"
+}
 
 if [ "$LETSENCRYPT" != "true" ]; then
     echo "letsencrypt disabled"
@@ -27,6 +61,8 @@ if [ -f ${LE_SSL_CERT} ] && openssl x509 -checkend ${renew_before} -noout -in ${
         echo "letsencrypt certificate ${LE_SSL_CERT} is present, but doesn't contain expected domains"
         echo "expected: ${LE_FQDN}"
         echo "found:    ${CERT_FQDNS}"
+    elif ! cert_key_match "${LE_SSL_CERT}" "${LE_SSL_KEY}"; then
+        echo "letsencrypt certificate ${LE_SSL_CERT} is present, but doesn't match key ${LE_SSL_KEY}"
     else
         echo "letsencrypt certificate ${LE_SSL_CERT} still valid"
         return 1
@@ -47,11 +83,47 @@ eval "certbot certonly -t -n --agree-tos --renew-by-default --email \"${LE_EMAIL
 le_result=$?
 if [ ${le_result} -ne 0 ]; then
     echo "failed to run certbot"
-    return 1
+    return 2
 fi
 
 FIRST_FQDN=$(echo "$LE_FQDN" | cut -d"," -f1)
-cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/privkey.pem ${LE_SSL_KEY}
-cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/fullchain.pem ${LE_SSL_CERT}
-cp -fv /etc/letsencrypt/live/${FIRST_FQDN}/chain.pem ${LE_SSL_CHAIN_CERT}
+LE_LIVE_DIR="/etc/letsencrypt/live/${FIRST_FQDN}"
+
+# stage all three files first, a partial or invalid copy should never replace a working certificate
+if ! cp -fv "${LE_LIVE_DIR}/privkey.pem" "${LE_SSL_KEY}.new" ||
+    ! cp -fv "${LE_LIVE_DIR}/fullchain.pem" "${LE_SSL_CERT}.new" ||
+    ! cp -fv "${LE_LIVE_DIR}/chain.pem" "${LE_SSL_CHAIN_CERT}.new"; then
+    echo "failed to copy certificate files from ${LE_LIVE_DIR}"
+    remove_staged
+    return 2
+fi
+
+if ! cert_key_match "${LE_SSL_CERT}.new" "${LE_SSL_KEY}.new"; then
+    echo "certificate ${LE_LIVE_DIR}/fullchain.pem doesn't match ${LE_LIVE_DIR}/privkey.pem, not installing"
+    remove_staged
+    return 2
+fi
+
+if ! backup_installed; then
+    echo "failed to keep a copy of the installed certificate files, not installing"
+    remove_backup
+    remove_staged
+    return 2
+fi
+
+# copy and not rename, destinations can be bind-mounted files or symlinks
+if ! cp -f "${LE_SSL_KEY}.new" "${LE_SSL_KEY}" ||
+    ! cp -f "${LE_SSL_CERT}.new" "${LE_SSL_CERT}" ||
+    ! cp -f "${LE_SSL_CHAIN_CERT}.new" "${LE_SSL_CHAIN_CERT}" ||
+    ! cert_key_match "${LE_SSL_CERT}" "${LE_SSL_KEY}"; then
+    echo "failed to install certificate files, restoring the previous ones"
+    restore_installed
+    remove_backup
+    remove_staged
+    return 2
+fi
+
+remove_backup
+remove_staged
+echo "certificate for ${LE_FQDN} installed"
 return 0
