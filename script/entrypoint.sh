@@ -80,8 +80,6 @@ mv -v /etc/nginx/stream.d /etc/nginx/stream.d.disabled
  while :; do
     echo "trying to update letsencrypt ..."
     /le.sh
-    #on the first run remove default config, conflicting on 80
-    rm -f /etc/nginx/conf.d/default.conf 2>/dev/null
     #on the first run enable config back
     mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null
     mv -v /etc/nginx/stream.d.disabled /etc/nginx/stream.d 2>/dev/null
