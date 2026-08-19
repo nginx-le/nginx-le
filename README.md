@@ -33,6 +33,22 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - if you don't want a pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
 
+### Local smoke test
+
+To check a build without involving Let's Encrypt, start the image with `LETSENCRYPT=false` and ask it
+for the built-in http to https redirect:
+
+```shell
+docker build -t nginx-le .
+docker run -d --name nginx-le-smoke -e LETSENCRYPT=false -p 127.0.0.1:8080:80 nginx-le
+
+# the first start generates dh parameters and takes a while
+until curl -s -o /dev/null http://127.0.0.1:8080/; do sleep 2; done
+curl -sI http://127.0.0.1:8080/ | head -1   # HTTP/1.1 301 Moved Permanently
+
+docker rm -f nginx-le-smoke
+```
+
 ### Configuration files variables replacement
 
 On start of the container all following text matches in custom configuration files you mounted will be replaced,
