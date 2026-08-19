@@ -27,7 +27,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - `stream*.conf` files are picked up into `/etc/nginx/stream.d/` directory and included into `stream`
   section of the Nginx configuration, see `stream2.conf` in `docker-compose.yml` file for reference.
   
-  Alternatively, mount directory with `*.conf` files into `/etc/nginx/conf.d-le` directory inside
+  Alternatively, mount directory with `*.conf` files into `/etc/nginx/stream.conf.d-le` directory inside
   the container to have them all copied at once.
 - pull image - `docker-compose pull`
 - if you don't want a pre-built image, make you own. `docker-compose build` will do it
