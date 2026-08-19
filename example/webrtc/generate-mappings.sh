@@ -30,5 +30,5 @@ echo "=== public ports to listen on nginx container ===="
 echo "=== paste inside server block in service.conf ===="
 echo "=================================================="
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
-    echo "listen $COUNTER;"
+    echo "listen $COUNTER ssl;"
 done
