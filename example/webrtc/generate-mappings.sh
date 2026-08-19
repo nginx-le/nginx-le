@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] && echo "Please provide the following arguments:" && echo "FROM_PORT TO_PORT SERVICE_NAME SERVICE_PORT" && echo "For example: 80 90 service1 8080" && exit 1
 
 FROMPORT=$1
