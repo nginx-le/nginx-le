@@ -99,7 +99,7 @@ path needed with `root` set for LE challenge: `location /.well-known/ {root /usr
 In your `docker-compose.yml` disable automatic Let's Encrypt certificate creation/renewal.
 ```yaml
     environment:
-      - LETSENCRYPT=true
+      - LETSENCRYPT=false
 ```
 
 ```shell
