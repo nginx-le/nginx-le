@@ -49,8 +49,8 @@ variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment,
 
 | Variable | Default value | Description |
 | -------- | ------------- | ----------- |
-| SSL_CERT       | `le-key.pem` | certbot `privkey.pem` new filename     |
-| SSL_KEY        | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_CERT       | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_KEY        | `le-key.pem` | certbot `privkey.pem` new filename     |
 | SSL_CHAIN_CERT | `le-chain-crt.pem` | certbot `chain.pem` new filename |
 | LETSENCRYPT | `false` | Enables Let's Encrypt certificate retrieval and renewal |
 | LE_FQDN     | | comma-separated list of domains for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
