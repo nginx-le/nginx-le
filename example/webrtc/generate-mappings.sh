@@ -24,7 +24,7 @@ echo '= map $server_port $internal_port { =============='
 echo "=================================================="
 
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
-    echo "\"$COUNTER\" \"$((SERVICEPORT + COUNTER))\";"
+    echo "\"$COUNTER\" \"$((SERVICEPORT + COUNTER - FROMPORT))\";"
 done
 
 echo "=================================================="
