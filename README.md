@@ -1,4 +1,4 @@
-# NGINX-LE - Nginx web and proxy with automatic let's encrypt [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/umputun/nginx-le/) 
+# NGINX-LE - Nginx web and proxy with automatic let's encrypt [![build](https://github.com/nginx-le/nginx-le/actions/workflows/build.yml/badge.svg)](https://github.com/nginx-le/nginx-le/actions/workflows/build.yml)
 
 Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsencrypt.org) support.
 
@@ -33,6 +33,22 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - if you don't want a pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
 
+### Local smoke test
+
+To check a build without involving Let's Encrypt, start the image with `LETSENCRYPT=false` and ask it
+for the built-in http to https redirect:
+
+```shell
+docker build -t nginx-le .
+docker run -d --name nginx-le-smoke -e LETSENCRYPT=false -p 127.0.0.1:8080:80 nginx-le
+
+# the first start generates dh parameters and takes a while
+until curl -s -o /dev/null http://127.0.0.1:8080/; do sleep 2; done
+curl -sI http://127.0.0.1:8080/ | head -1   # HTTP/1.1 301 Moved Permanently
+
+docker rm -f nginx-le-smoke
+```
+
 ### Configuration files variables replacement
 
 On start of the container all following text matches in custom configuration files you mounted will be replaced,
@@ -49,8 +65,8 @@ variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment,
 
 | Variable | Default value | Description |
 | -------- | ------------- | ----------- |
-| SSL_CERT       | `le-key.pem` | certbot `privkey.pem` new filename     |
-| SSL_KEY        | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_CERT       | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_KEY        | `le-key.pem` | certbot `privkey.pem` new filename     |
 | SSL_CHAIN_CERT | `le-chain-crt.pem` | certbot `chain.pem` new filename |
 | LETSENCRYPT | `false` | Enables Let's Encrypt certificate retrieval and renewal |
 | LE_FQDN     | | comma-separated list of domains for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
@@ -103,7 +119,7 @@ path needed with `root` set for LE challenge: `location /.well-known/ {root /usr
 In your `docker-compose.yml` disable automatic Let's Encrypt certificate creation/renewal.
 ```yaml
     environment:
-      - LETSENCRYPT=true
+      - LETSENCRYPT=false
 ```
 
 ```shell
