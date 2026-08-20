@@ -1,4 +1,4 @@
-# NGINX-LE - Nginx web and proxy with automatic let's encrypt [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/umputun/nginx-le/) 
+# NGINX-LE - Nginx web and proxy with automatic let's encrypt [![build](https://github.com/nginx-le/nginx-le/actions/workflows/build.yml/badge.svg)](https://github.com/nginx-le/nginx-le/actions/workflows/build.yml)
 
 Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsencrypt.org) support.
 
@@ -27,11 +27,27 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - `stream*.conf` files are picked up into `/etc/nginx/stream.d/` directory and included into `stream`
   section of the Nginx configuration, see `stream2.conf` in `docker-compose.yml` file for reference.
   
-  Alternatively, mount directory with `*.conf` files into `/etc/nginx/conf.d-le` directory inside
+  Alternatively, mount directory with `*.conf` files into `/etc/nginx/stream.conf.d-le` directory inside
   the container to have them all copied at once.
 - pull image - `docker-compose pull`
 - if you don't want a pre-built image, make you own. `docker-compose build` will do it
 - start it `docker-compose up`
+
+### Local smoke test
+
+To check a build without involving Let's Encrypt, start the image with `LETSENCRYPT=false` and ask it
+for the built-in http to https redirect:
+
+```shell
+docker build -t nginx-le .
+docker run -d --name nginx-le-smoke -e LETSENCRYPT=false -p 127.0.0.1:8080:80 nginx-le
+
+# the first start generates dh parameters and takes a while
+until curl -s -o /dev/null http://127.0.0.1:8080/; do sleep 2; done
+curl -sI http://127.0.0.1:8080/ | head -1   # HTTP/1.1 301 Moved Permanently
+
+docker rm -f nginx-le-smoke
+```
 
 ### Configuration files variables replacement
 
@@ -43,14 +59,14 @@ variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment,
 | SSL_CERT       | `/etc/nginx/ssl/$SSL_CERT`       | `ssl_certificate` | Public SSL certificate, sent to client |
 | SSL_KEY        | `/etc/nginx/ssl/$SSL_KEY`        | `ssl_certificate_key` | SSL private key, not sent to client |
 | SSL_CHAIN_CERT | `/etc/nginx/ssl/$SSL_CHAIN_CERT` | `ssl_trusted_certificate` | Trusted SSL certificates, not sent to client |
-| LE_FQDN        | `$LE_FQDN` | `server_name` | List of domains, useful for configuration with single `server` block |
+| LE_FQDN        | `$LE_FQDN`, commas replaced by spaces in `server_name` | `server_name` | List of domains, useful for configuration with single `server` block |
 
 ### Environment variables list
 
 | Variable | Default value | Description |
 | -------- | ------------- | ----------- |
-| SSL_CERT       | `le-key.pem` | certbot `privkey.pem` new filename     |
-| SSL_KEY        | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_CERT       | `le-crt.pem` | certbot `fullchain.pem` new filename   |
+| SSL_KEY        | `le-key.pem` | certbot `privkey.pem` new filename     |
 | SSL_CHAIN_CERT | `le-chain-crt.pem` | certbot `chain.pem` new filename |
 | LETSENCRYPT | `false` | Enables Let's Encrypt certificate retrieval and renewal |
 | LE_FQDN     | | comma-separated list of domains for Let's Encrypt certificate, required if `LETSENCRYPT` is `true` |
@@ -70,6 +86,10 @@ http (:80) port, make sure you [handle](https://github.com/umputun/nginx-le/blob
 path needed with `root` set for LE challenge: `location /.well-known/ {root /usr/share/nginx/html;}`
 
 - image uses alpine's `certbot` package.
+- OCSP stapling is not enabled, [Let's Encrypt retired its OCSP responders](https://letsencrypt.org/2025/08/06/ocsp-service-has-reached-end-of-life)
+  and their certificates carry no responder URL. If you bring your own certificate from a CA that still
+  publishes one, or one with the Must-Staple extension, enable `ssl_stapling` and `ssl_stapling_verify`
+  in your own `server` block.
 - `script/entrypoint.sh` requests LE certificate and will refresh every 10 days in case if certificate is close to expiration (30day)
 - `script/le.sh` gets SSL
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)
@@ -99,7 +119,7 @@ path needed with `root` set for LE challenge: `location /.well-known/ {root /usr
 In your `docker-compose.yml` disable automatic Let's Encrypt certificate creation/renewal.
 ```yaml
     environment:
-      - LETSENCRYPT=true
+      - LETSENCRYPT=false
 ```
 
 ```shell

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] && echo "Please provide the following arguments:" && echo "FROM_PORT TO_PORT SERVICE_NAME SERVICE_PORT" && echo "For example: 80 90 service1 8080" && exit 1
 
 FROMPORT=$1
@@ -22,7 +24,7 @@ echo '= map $server_port $internal_port { =============='
 echo "=================================================="
 
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
-    echo "\"$COUNTER\" \"$((SERVICEPORT + COUNTER))\";"
+    echo "\"$COUNTER\" \"$((SERVICEPORT + COUNTER - FROMPORT))\";"
 done
 
 echo "=================================================="
@@ -30,5 +32,5 @@ echo "=== public ports to listen on nginx container ===="
 echo "=== paste inside server block in service.conf ===="
 echo "=================================================="
 for (( COUNTER=$FROMPORT; COUNTER<=$TOPORT; COUNTER+=1 )); do
-    echo "listen $COUNTER;"
+    echo "listen $COUNTER ssl;"
 done
