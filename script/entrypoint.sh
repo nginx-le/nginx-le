@@ -48,7 +48,7 @@ if [ ${#STREAMS_FILES} -ne 0 ]; then
 fi
 
 cp -fv /etc/nginx/conf.d-le/*.conf /etc/nginx/conf.d/
-cp -fv /etc/nginx/stream.conf.d-le/*.conf /etc/nginx/stream.conf.d/
+cp -fv /etc/nginx/stream.conf.d-le/*.conf /etc/nginx/stream.d/
 
 #replace SSL_KEY, SSL_CERT and SSL_CHAIN_CERT by actual keys
 sed -i "s|SSL_KEY|${LE_SSL_KEY}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
@@ -58,9 +58,10 @@ sed -i "s|SSL_CERT|${LE_SSL_CERT}|g" /etc/nginx/stream.d/*.conf 2>/dev/null
 sed -i "s|SSL_CHAIN_CERT|${LE_SSL_CHAIN_CERT}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
 sed -i "s|SSL_CHAIN_CERT|${LE_SSL_CHAIN_CERT}|g" /etc/nginx/stream.d/*.conf 2>/dev/null
 
-#replace LE_FQDN
-sed -i "s|LE_FQDN|${LE_FQDN}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
-sed -i "s|LE_FQDN|${LE_FQDN}|g" /etc/nginx/stream.d/*.conf 2>/dev/null
+#replace LE_FQDN, server_name takes domains separated by spaces, elsewhere the comma-separated value is kept as is
+LE_FQDN_NGINX=$(printf '%s' "${LE_FQDN}" | tr ',' ' ')
+sed -i "/server_name/ s|LE_FQDN|${LE_FQDN_NGINX}|g; s|LE_FQDN|${LE_FQDN}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
+sed -i "/server_name/ s|LE_FQDN|${LE_FQDN_NGINX}|g; s|LE_FQDN|${LE_FQDN}|g" /etc/nginx/stream.d/*.conf 2>/dev/null
 
 #generate dhparams.pem
 if [ ! -f /etc/nginx/ssl/dhparams.pem ]; then
@@ -80,8 +81,6 @@ mv -v /etc/nginx/stream.d /etc/nginx/stream.d.disabled
  while :; do
     echo "trying to update letsencrypt ..."
     /le.sh
-    #on the first run remove default config, conflicting on 80
-    rm -f /etc/nginx/conf.d/default.conf 2>/dev/null
     #on the first run enable config back
     mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null
     mv -v /etc/nginx/stream.d.disabled /etc/nginx/stream.d 2>/dev/null
