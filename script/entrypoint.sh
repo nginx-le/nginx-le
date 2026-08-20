@@ -48,7 +48,7 @@ if [ ${#STREAMS_FILES} -ne 0 ]; then
 fi
 
 cp -fv /etc/nginx/conf.d-le/*.conf /etc/nginx/conf.d/
-cp -fv /etc/nginx/stream.conf.d-le/*.conf /etc/nginx/stream.conf.d/
+cp -fv /etc/nginx/stream.conf.d-le/*.conf /etc/nginx/stream.d/
 
 #replace SSL_KEY, SSL_CERT and SSL_CHAIN_CERT by actual keys
 sed -i "s|SSL_KEY|${LE_SSL_KEY}|g" /etc/nginx/conf.d/*.conf 2>/dev/null
