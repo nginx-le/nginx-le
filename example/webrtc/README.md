@@ -11,7 +11,7 @@ The nginx listens to ports ```443``` and ```8443``` and proxy requests to these 
 There is also a script to help you generate mappings for some range of ports, named `generate-mappings.sh`. Just pass in the `first port`, `last port`, `internal service name` and `internal service starting port` like this:
 
 ```
-sh generate-mappings.sh 8080 8090 service1 8000
+bash generate-mappings.sh 8080 8090 service1 8000
 ```
 
 to get the lines you can copy to your `service.conf`.
