@@ -7,7 +7,7 @@ Guidance for AI agents working in this repo.
 `nginx-le` is a Docker image: nginx plus Let's Encrypt (certbot) auto-provisioning
 and renewal in one container. Published as `umputun/nginx-le` on Docker Hub and
 `ghcr.io/umputun/nginx-le`. No application code - it is a Dockerfile plus two
-POSIX shell scripts. There is no test suite.
+POSIX shell scripts.
 
 ## Layout
 
@@ -17,6 +17,7 @@ POSIX shell scripts. There is no test suite.
   configs, starts the cert-renewal loop, then `exec nginx`
 - `script/le.sh` - certbot wrapper; renews only when the cert is within 30 days
   of expiry or missing an expected domain
+- `tests/le_test.sh` - regression tests for `le.sh`, certbot and `cp` stubbed
 - `etc/`, `example/` - sample service configs and compose setups for users
 - `docker-compose.yml` - reference compose file
 - `.github/workflows/build.yml` - CI
@@ -52,6 +53,20 @@ pushing a version tag:
 
 Until step 3 runs, `docker pull umputun/nginx-le` still serves the previous
 release.
+
+## Tests
+
+`tests/le_test.sh` covers `le.sh`: certificate installation, the rollback of a
+failed install, and the cases where renewal is skipped. It runs inside the image,
+against the scripts in the working tree:
+
+```
+docker build -t nginx-le .
+docker run --rm --entrypoint sh -v "${PWD}":/repo:ro nginx-le /repo/tests/le_test.sh
+```
+
+Nothing reaches the network, certbot and `cp` are stubbed. CI runs the same two
+commands in the `test` job.
 
 ## Conventions
 

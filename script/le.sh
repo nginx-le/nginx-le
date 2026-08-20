@@ -26,14 +26,16 @@ backup_installed() {
 }
 
 restore_installed() {
+    restore_result=0
     for installed in "${LE_SSL_KEY}" "${LE_SSL_CERT}" "${LE_SSL_CHAIN_CERT}"; do
         if [ -f "${installed}.bak" ]; then
-            cp -f "${installed}.bak" "${installed}"
+            cp -f "${installed}.bak" "${installed}" || restore_result=1
         else
             # nothing was installed under this name before, leave nothing behind
-            rm -f "${installed}"
+            rm -f "${installed}" || restore_result=1
         fi
     done
+    return ${restore_result}
 }
 
 remove_backup() {
@@ -63,6 +65,8 @@ if [ -f ${LE_SSL_CERT} ] && openssl x509 -checkend ${renew_before} -noout -in ${
         echo "found:    ${CERT_FQDNS}"
     elif ! cert_key_match "${LE_SSL_CERT}" "${LE_SSL_KEY}"; then
         echo "letsencrypt certificate ${LE_SSL_CERT} is present, but doesn't match key ${LE_SSL_KEY}"
+    elif [ ! -f "${LE_SSL_CHAIN_CERT}" ]; then
+        echo "letsencrypt certificate ${LE_SSL_CERT} is present, but chain ${LE_SSL_CHAIN_CERT} is missing"
     else
         echo "letsencrypt certificate ${LE_SSL_CERT} still valid"
         return 1
@@ -104,6 +108,8 @@ if ! cert_key_match "${LE_SSL_CERT}.new" "${LE_SSL_KEY}.new"; then
     return 2
 fi
 
+# a leftover copy from an interrupted run says nothing about what is installed now
+remove_backup
 if ! backup_installed; then
     echo "failed to keep a copy of the installed certificate files, not installing"
     remove_backup
@@ -117,8 +123,11 @@ if ! cp -f "${LE_SSL_KEY}.new" "${LE_SSL_KEY}" ||
     ! cp -f "${LE_SSL_CHAIN_CERT}.new" "${LE_SSL_CHAIN_CERT}" ||
     ! cert_key_match "${LE_SSL_CERT}" "${LE_SSL_KEY}"; then
     echo "failed to install certificate files, restoring the previous ones"
-    restore_installed
-    remove_backup
+    if restore_installed; then
+        remove_backup
+    else
+        echo "failed to restore the previous certificate files, they are kept as .bak next to them"
+    fi
     remove_staged
     return 2
 fi

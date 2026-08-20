@@ -10,6 +10,18 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+
+      - name: build image for tests
+        run: docker build -t nginx-le-test .
+
+      - name: run le.sh tests
+        run: docker run --rm --entrypoint sh -v "${PWD}":/repo:ro nginx-le-test /repo/tests/le_test.sh
+
   build:
     runs-on: ubuntu-latest
     steps:
