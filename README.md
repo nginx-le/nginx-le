@@ -27,7 +27,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
 - `stream*.conf` files are picked up into `/etc/nginx/stream.d/` directory and included into `stream`
   section of the Nginx configuration, see `stream2.conf` in `docker-compose.yml` file for reference.
   
-  Alternatively, mount directory with `*.conf` files into `/etc/nginx/conf.d-le` directory inside
+  Alternatively, mount directory with `*.conf` files into `/etc/nginx/stream.conf.d-le` directory inside
   the container to have them all copied at once.
 - pull image - `docker-compose pull`
 - if you don't want a pre-built image, make you own. `docker-compose build` will do it
@@ -43,7 +43,7 @@ variable with dollar sign (`$`, like `$LE_FQDN`) will be taken from environment,
 | SSL_CERT       | `/etc/nginx/ssl/$SSL_CERT`       | `ssl_certificate` | Public SSL certificate, sent to client |
 | SSL_KEY        | `/etc/nginx/ssl/$SSL_KEY`        | `ssl_certificate_key` | SSL private key, not sent to client |
 | SSL_CHAIN_CERT | `/etc/nginx/ssl/$SSL_CHAIN_CERT` | `ssl_trusted_certificate` | Trusted SSL certificates, not sent to client |
-| LE_FQDN        | `$LE_FQDN` | `server_name` | List of domains, useful for configuration with single `server` block |
+| LE_FQDN        | `$LE_FQDN`, commas replaced by spaces in `server_name` | `server_name` | List of domains, useful for configuration with single `server` block |
 
 ### Environment variables list
 
