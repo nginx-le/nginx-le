@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# scripts is trying to renew certificate only if close (30 days) to expiration
+# renews the certificate when it expires within 30 days, misses an expected domain,
+# doesn't match the installed key, or has no chain file
 # exit codes: 0 - certificate installed, 1 - nothing to do, 2 - renewal or installation failed
 
 # 30 days

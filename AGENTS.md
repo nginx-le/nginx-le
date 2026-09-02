@@ -15,8 +15,9 @@ POSIX shell scripts.
 - `conf/nginx.conf` - baked-in main nginx config
 - `script/entrypoint.sh` - container entrypoint (`CMD`); sets TZ, assembles
   configs, starts the cert-renewal loop, then `exec nginx`
-- `script/le.sh` - certbot wrapper; renews only when the cert is within 30 days
-  of expiry or missing an expected domain
+- `script/le.sh` - certbot wrapper; renews when the cert is within 30 days of
+  expiry, misses an expected domain, doesn't match the installed key, or has no
+  chain file
 - `tests/le_test.sh` - regression tests for `le.sh`, certbot and `cp` stubbed
 - `etc/`, `example/` - sample service configs and compose setups for users
 - `docker-compose.yml` - reference compose file
