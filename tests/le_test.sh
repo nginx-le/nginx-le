@@ -115,6 +115,16 @@ check_file "${LE_SSL_CERT}" "certificate installed"
 check_file "${LE_SSL_CHAIN_CERT}" "chain installed"
 check_no_leftovers "rsa lineage"
 
+echo "--- replaces an older installed set"
+reset_env rsa
+install_previous
+sh "${LE_SH}" >/dev/null 2>&1
+check_rc "older set replaced" 0 $?
+check_same /etc/letsencrypt/live/www.example.com/privkey.pem "${LE_SSL_KEY}" "installed key is the new one"
+check_same /etc/letsencrypt/live/www.example.com/fullchain.pem "${LE_SSL_CERT}" "installed certificate is the new one"
+check_same /etc/letsencrypt/live/www.example.com/chain.pem "${LE_SSL_CHAIN_CERT}" "installed chain is the new one"
+check_no_leftovers "older set replaced"
+
 echo "--- installs an ecdsa certificate, the certbot default"
 reset_env ec
 sh "${LE_SH}" >/dev/null 2>&1
