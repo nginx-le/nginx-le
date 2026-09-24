@@ -84,8 +84,13 @@ mv -v /etc/nginx/stream.d /etc/nginx/stream.d.disabled
     #on the first run enable config back
     mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null
     mv -v /etc/nginx/stream.d.disabled /etc/nginx/stream.d 2>/dev/null
-    echo "reload nginx with ssl"
-    nginx -s reload
+    #nginx ignores a reload with a broken config, test first to report the reason instead
+    if nginx -t; then
+        echo "reload nginx with ssl"
+        nginx -s reload
+    else
+        echo "nginx configuration is not valid, skip reload"
+    fi
     sleep 10d
  done
 ) &
