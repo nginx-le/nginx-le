@@ -205,7 +205,7 @@ fi
 echo "--- reports a certbot failure"
 reset_env rsa
 CERTBOT_EXIT=1 sh "${LE_SH}" >/dev/null 2>&1
-check_rc "certbot failure reported" 2 $?
+check_rc "certbot failure reported" 3 $?
 check_no_file "${LE_SSL_CERT}" "no certificate installed"
 
 echo "--- does nothing when disabled"
