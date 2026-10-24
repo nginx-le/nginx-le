@@ -2,7 +2,8 @@
 
 # renews the certificate when it expires within 30 days, misses an expected domain,
 # doesn't match the installed key, or has no chain file
-# exit codes: 0 - certificate installed, 1 - nothing to do, 2 - renewal or installation failed
+# exit codes: 0 - certificate installed, 1 - nothing to do, 2 - installation failed,
+# 3 - certbot failed to obtain a certificate
 
 # 30 days
 renew_before=2592000
@@ -88,7 +89,7 @@ eval "certbot certonly -t -n --agree-tos --renew-by-default --email \"${LE_EMAIL
 le_result=$?
 if [ ${le_result} -ne 0 ]; then
     echo "failed to run certbot"
-    return 2
+    return 3
 fi
 
 FIRST_FQDN=$(echo "$LE_FQDN" | cut -d"," -f1)

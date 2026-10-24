@@ -19,6 +19,8 @@ POSIX shell scripts.
   expiry, misses an expected domain, doesn't match the installed key, or has no
   chain file
 - `tests/le_test.sh` - regression tests for `le.sh`, certbot and `cp` stubbed
+- `tests/entrypoint_test.sh` - tests for the renewal loop in `entrypoint.sh`,
+  `le.sh`, nginx and `sleep` stubbed
 - `etc/`, `example/` - sample service configs and compose setups for users
 - `docker-compose.yml` - reference compose file
 - `.github/workflows/build.yml` - CI
@@ -66,6 +68,11 @@ docker run --rm --entrypoint sh -v "${PWD}":/repo:ro nginx-le /repo/tests/le_tes
 
 Nothing reaches the network, certbot and `cp` are stubbed. CI runs the same two
 commands in the `test` job.
+
+`tests/entrypoint_test.sh` covers the renewal loop: how long it waits after each
+`le.sh` exit code (an hour after a certbot failure, ten days otherwise) and the
+reload once a certificate is in place. Run it the same way, with
+`/repo/tests/entrypoint_test.sh` as the script; CI runs it in the `test` job too.
 
 ## Conventions
 

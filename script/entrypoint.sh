@@ -81,6 +81,7 @@ mv -v /etc/nginx/stream.d /etc/nginx/stream.d.disabled
  while :; do
     echo "trying to update letsencrypt ..."
     /le.sh
+    le_result=$?
     #on the first run enable config back
     mv -v /etc/nginx/conf.d.disabled /etc/nginx/conf.d 2>/dev/null
     mv -v /etc/nginx/stream.d.disabled /etc/nginx/stream.d 2>/dev/null
@@ -91,7 +92,15 @@ mv -v /etc/nginx/stream.d /etc/nginx/stream.d.disabled
     else
         echo "nginx configuration is not valid, skip reload"
     fi
-    sleep 10d
+    #a certbot failure is retried hourly, let's encrypt allows 5 failed authorizations per domain per hour
+    #and pauses the domain after 1152 in a row, about 50 days at this rate.
+    #an installation failure is not, each certbot run issues a new certificate and issuance is rate limited too
+    renew_interval=10d
+    if [ ${le_result} -eq 3 ]; then
+        renew_interval=1h
+    fi
+    echo "next letsencrypt update in ${renew_interval}"
+    sleep ${renew_interval}
  done
 ) &
 
