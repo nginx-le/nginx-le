@@ -26,6 +26,7 @@ jobs:
         run: docker run --rm --entrypoint sh -v "${PWD}":/repo:ro nginx-le-test /repo/tests/entrypoint_test.sh
 
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
@@ -41,14 +42,37 @@ jobs:
       - name: available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
 
-      - name: build image
+      # the image lives under the umputun user namespace, not the nginx-le org,
+      # so both logins use umputun's tokens rather than the repo's GITHUB_TOKEN
+      - name: login to ghcr.io
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: umputun
+          password: ${{ secrets.PKG_TOKEN }}
+
+      - name: login to Docker Hub
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: docker/login-action@v4
+        with:
+          username: umputun
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: build image, push on tag
         env:
           GITHUB_SHA: ${{ github.sha}}
           GITHUB_REF: ${{ github.ref}}
         run: |
           ref="$(echo ${GITHUB_REF} | cut -d'/' -f3)"
           echo GITHUB_REF - $ref
-          docker buildx build \
+          tags="-t ghcr.io/umputun/nginx-le:${ref} -t umputun/nginx-le:${ref}"
+          push=""
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            tags="${tags} -t ghcr.io/umputun/nginx-le:latest -t umputun/nginx-le:latest"
+            push="--push"
+          fi
+          docker buildx build ${push} \
               --build-arg CI=github --build-arg GITHUB_SHA=${GITHUB_SHA} --build-arg GIT_BRANCH=${ref} \
               --platform linux/amd64,linux/arm/v7,linux/arm64 \
-              -t ghcr.io/umputun/nginx-le:${ref} -t umputun/nginx-le:${ref} .
+              ${tags} .
