@@ -25,35 +25,33 @@ POSIX shell scripts.
 
 ## Build and release
 
-CI (`build.yml`) only **builds** the multi-arch image to verify it compiles -
-it has no `docker login` and no `--push`. It does NOT publish anything.
+CI (`build.yml`) builds the multi-arch image on every push and pull request.
+Only a tag push publishes: the `build` job logs in to ghcr.io and Docker Hub as
+`umputun` and pushes `:<tag>` and `:latest` to both. Branch and PR builds have
+no login and no `--push`. The `build` job waits for the `test` job, so a tag
+with failing tests publishes nothing.
 
-Releases to Docker Hub and ghcr.io are **manual**. Make targets:
+Publishing needs two repo secrets, both tokens of the `umputun` account (the
+images live under that user, not the `nginx-le` org, so `GITHUB_TOKEN` cannot
+push them):
+
+- `PKG_TOKEN` - GitHub PAT with `write:packages`, for ghcr.io
+- `DOCKER_HUB_TOKEN` - Docker Hub access token with write scope
+
+All builds target `linux/amd64`, `linux/arm64`, `linux/arm/v7` via buildx.
+
+Make targets for publishing by hand, from a workstation logged in to both
+registries:
 
 - `make release_master` - builds and pushes the current branch tag
 - `make release_latest` - builds and pushes `:<git-tag>` and `:latest`
 
-Both target `linux/amd64`, `linux/arm64`, `linux/arm/v7` via buildx.
+### After tagging a release
 
-### Deployment after tagging a release
-
-Pushing a git tag does NOT publish the image - CI builds it and stops. The new
-version reaches Docker Hub only when someone runs the release make target by
-hand. This is the step that gets forgotten (see issue #86). After creating and
-pushing a version tag:
-
-1. Be on a workstation logged in to both registries: `docker login`
-   (Docker Hub, user `umputun`) and `docker login ghcr.io`.
-2. Check out the tagged commit so `git describe --abbrev=0 --tags` resolves to
-   the new tag - the Makefile derives the image tag from it.
-3. Run `make release_latest`. It builds all three platforms and pushes
-   `umputun/nginx-le:<tag>`, `:latest`, and the `ghcr.io` equivalents.
-4. Verify: `docker buildx imagetools inspect umputun/nginx-le:<tag>` shows the
-   three platforms, and `docker run --rm --entrypoint sh umputun/nginx-le:<tag>
-   -c 'nginx -v'` reports the expected version.
-
-Until step 3 runs, `docker pull umputun/nginx-le` still serves the previous
-release.
+Pushing a version tag starts the CI run that publishes it. Once it passes,
+verify: `docker buildx imagetools inspect umputun/nginx-le:<tag>` shows the
+three platforms, and `docker run --rm --entrypoint sh umputun/nginx-le:<tag>
+-c 'nginx -v'` reports the expected version.
 
 ## Tests
 
@@ -73,6 +71,6 @@ commands in the `test` job.
 
 - Shell scripts run under alpine's `/bin/sh` (busybox ash), not bash - they use
   a few ash extensions (`[[ ]]`, `${var:0:1}`), so test against busybox ash
-- Bump the nginx base image by editing the `FROM` line in `Dockerfile`; tag and
-  run `make release_latest` to ship it
+- Bump the nginx base image by editing the `FROM` line in `Dockerfile`; push a
+  version tag and CI publishes it (see Build and release)
 - Update `README.md` when env vars, volumes, or behavior change
