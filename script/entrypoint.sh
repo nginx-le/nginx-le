@@ -92,7 +92,8 @@ mv -v /etc/nginx/stream.d /etc/nginx/stream.d.disabled
     else
         echo "nginx configuration is not valid, skip reload"
     fi
-    #a certbot failure is retried hourly, let's encrypt allows 5 failed authorizations per domain per hour.
+    #a certbot failure is retried hourly, let's encrypt allows 5 failed authorizations per domain per hour
+    #and pauses the domain after 1152 in a row, about 50 days at this rate.
     #an installation failure is not, each certbot run issues a new certificate and issuance is rate limited too
     renew_interval=10d
     if [ ${le_result} -eq 3 ]; then

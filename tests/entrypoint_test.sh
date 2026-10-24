@@ -76,10 +76,11 @@ run_case "installation failure retried in ten days" "2" \
 run_case "certbot failure retried hourly until installed" "3 3 0" \
     "nginx -t; sleep 1h; nginx -t; sleep 1h; nginx -t; nginx -s reload; sleep 10d;"
 
-if grep -q "next letsencrypt update in 10d" /tmp/entrypoint.log; then
-    echo "ok   next update logged"
+logged=$(grep -o 'next letsencrypt update in [0-9]*[hd]' /tmp/entrypoint.log | sed 's/.* //' | tr '\n' ' ')
+if [ "${logged}" = "1h 1h 10d " ]; then
+    echo "ok   next update logged with each interval"
 else
-    echo "FAIL next update not logged"
+    echo "FAIL next update intervals: expected \"1h 1h 10d \", got \"${logged}\""
     FAILED=1
 fi
 
