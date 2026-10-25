@@ -90,6 +90,11 @@ path needed with `root` set for LE challenge: `location /.well-known/ {root /usr
   and their certificates carry no responder URL. If you bring your own certificate from a CA that still
   publishes one, or one with the Must-Staple extension, enable `ssl_stapling` and `ssl_stapling_verify`
   in your own `server` block.
+- request size limits are the nginx defaults, `client_max_body_size 1m` and `large_client_header_buffers 4 8k`.
+  Images up to v1.8.0 capped both at 4k. To change them for one site, set them in its `server` block. To change
+  them for all sites, set them in a service config outside any `server` block. Setting them outside `server`
+  blocks also applies them to the built-in HTTP redirect server. To keep the old limits, put
+  `client_max_body_size 4k;` and `large_client_header_buffers 2 4k;` outside any `server` block.
 - `script/entrypoint.sh` requests LE certificate and will refresh every 10 days in case if certificate is close to expiration (30day), misses one of the `LE_FQDN` domains, doesn't match the installed key or lost its chain file. When certbot fails to get a certificate, for example because DNS doesn't point to the host yet or port 80 isn't reachable, it tries again every hour. After about 50 days of failures in a row Let's Encrypt pauses issuance for the domain, and the certbot error in the log links to the page that lifts the pause
 - `script/le.sh` gets SSL
 - nginx-le on [docker-hub](https://hub.docker.com/r/umputun/nginx-le/)

@@ -25,6 +25,9 @@ jobs:
       - name: run entrypoint.sh tests
         run: docker run --rm --entrypoint sh -v "${PWD}":/repo:ro nginx-le-test /repo/tests/entrypoint_test.sh
 
+      - name: run nginx.conf tests
+        run: docker run --rm --entrypoint sh -v "${PWD}":/repo:ro nginx-le-test /repo/tests/nginx_conf_test.sh
+
   build:
     needs: test
     runs-on: ubuntu-latest

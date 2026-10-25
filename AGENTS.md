@@ -21,6 +21,8 @@ POSIX shell scripts.
 - `tests/le_test.sh` - regression tests for `le.sh`, certbot and `cp` stubbed
 - `tests/entrypoint_test.sh` - tests for the renewal loop in `entrypoint.sh`,
   `le.sh`, nginx and `sleep` stubbed
+- `tests/nginx_conf_test.sh` - tests for the request limits in `conf/nginx.conf`,
+  against a real nginx
 - `etc/`, `example/` - sample service configs and compose setups for users
 - `docker-compose.yml` - reference compose file
 - `.github/workflows/build.yml` - CI
@@ -73,6 +75,12 @@ commands in the `test` job.
 `le.sh` exit code (an hour after a certbot failure, ten days otherwise) and the
 reload once a certificate is in place. Run it the same way, with
 `/repo/tests/entrypoint_test.sh` as the script; CI runs it in the `test` job too.
+
+`tests/nginx_conf_test.sh` starts nginx with `conf/nginx.conf` from the working
+tree and checks that a 5 KB body, cookie and query string pass, a body over 1 MB
+gets 413, and the limits can be set for all servers from a `conf.d` file. Run it
+the same way, with `/repo/tests/nginx_conf_test.sh` as the script; CI runs it in
+the `test` job.
 
 ## Conventions
 
