@@ -91,7 +91,7 @@ path needed with `root` set for LE challenge: `location /.well-known/ {root /usr
   publishes one, or one with the Must-Staple extension, enable `ssl_stapling` and `ssl_stapling_verify`
   in your own `server` block.
 - request size limits are the nginx defaults, `client_max_body_size 1m` and `large_client_header_buffers 4 8k`.
-  Images up to v1.8.0 capped both at 4k. To change them for all sites, including the built-in HTTP redirect
+  Older images capped both at 4k. To change them for all sites, including the built-in HTTP redirect
   server, set them in a service config outside any `server` block. `client_max_body_size` also works inside one
   site's `server` block. `large_client_header_buffers` there is reliable only for HTTPS sites, because nginx
   reads a plain HTTP request line with the default server's value. To keep the old limits, put
