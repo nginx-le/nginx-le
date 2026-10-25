@@ -46,7 +46,8 @@ Make targets for publishing by hand, from a workstation logged in to both
 registries:
 
 - `make release_master` - builds and pushes the current branch tag
-- `make release_latest` - builds and pushes `:<git-tag>` and `:latest`
+- `make release_latest` - builds and pushes `:<git-tag>` and `:latest`; HEAD
+  must carry the tag, otherwise it stops before building
 
 ### After tagging a release
 
