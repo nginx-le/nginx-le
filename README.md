@@ -17,6 +17,7 @@ Simple nginx image (alpine based) with integrated [Let's Encrypt](https://letsen
     ssl_certificate_key SSL_KEY;
     ssl_trusted_certificate SSL_CHAIN_CERT;
     ```
+  - by default nginx drops the global headers from `conf/nginx.conf` (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`) at any level with its own `add_header`. The example keeps them with `add_header_inherit merge;` in its `server` block (nginx 1.29.3+). Merging also applies to nested blocks, so a header set at two levels is sent twice
 - make sure `volumes` in docker-compose.yml changed to your service config
 - you can map multiple custom config files to in compose using `service*.conf` filename pattern, 
   see `service2.conf` in [docker-compose.yml](https://github.com/nginx-le/nginx-le/blob/master/docker-compose.yml)
