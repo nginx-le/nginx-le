@@ -21,8 +21,8 @@ POSIX shell scripts.
 - `tests/le_test.sh` - regression tests for `le.sh`, certbot and `cp` stubbed
 - `tests/entrypoint_test.sh` - tests for the renewal loop in `entrypoint.sh`,
   `le.sh`, nginx and `sleep` stubbed
-- `tests/nginx_conf_test.sh` - tests for the request limits in `conf/nginx.conf`,
-  against a real nginx
+- `tests/nginx_conf_test.sh` - tests for the request limits and TLS key exchange
+  groups in `conf/nginx.conf`, against a real nginx
 - `etc/`, `example/` - sample service configs and compose setups for users
 - `docker-compose.yml` - reference compose file
 - `.github/workflows/build.yml` - CI
@@ -79,7 +79,10 @@ reload once a certificate is in place. Run it the same way, with
 
 `tests/nginx_conf_test.sh` starts nginx with `conf/nginx.conf` from the working
 tree and checks that a 5 KB body, cookie and query string pass, a body over 1 MB
-gets 413, and the limits can be set for all servers from a `conf.d` file. Run it
+gets 413, and the limits can be set for all servers from a `conf.d` file. Over a
+self-signed port 443 server it checks that X25519 (TLS 1.3, and TLS 1.2 with ECDHE
+ciphers), X25519MLKEM768 and P-384 are negotiated, and that `ssl_ecdh_curve` can be
+set for all servers from a `conf.d` file. Run it
 the same way, with `/repo/tests/nginx_conf_test.sh` as the script; CI runs it in
 the `test` job.
 
